@@ -14,4 +14,5 @@
 - Пользователлю предлагается распечатать qr-code на шаблоне
 
 Для успешной работы необходимо установить следующие компоненты:
-    ```printf(pip3 install pyqt5, sha3, ecdsa, bitcoin --user)```
+
+```printf(pip3 install pyqt5, sha3, ecdsa, bitcoin --user)```
