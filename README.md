@@ -20,3 +20,8 @@ MultiColdWallet - GUI решение по созданию нового коше
 ```printf(pip3 install pyqt5, sha3, ecdsa, bitcoin --user)```
 
 В логике программы реализована легкомасштабируемая концепция создания и печати пары адреса и приватного ключа на шаблоне
+
+Gits:
+@MarsherSusanin
+@Amiwriter-git
+@Mfershalov
