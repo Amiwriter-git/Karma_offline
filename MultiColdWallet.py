@@ -4,11 +4,9 @@ import sys
 from PyQt5.QtWidgets import (QWidget, QToolTip,
     QPushButton, QComboBox, QLabel, QTextEdit, QGraphicsView, QGraphicsScene, QApplication)
 from PyQt5.QtGui import (QFont,QImage, QPixmap)
-from PyQt5 import QtGui
+from PyQt5 import (QtGui, QtCore)
 from bitcoin import *
-
-#from Ethereum import *
-
+from PyQt5.Qt import (QPrinter, QPrintDialog)
 from ecdsa import SigningKey, SECP256k1
 import sha3
 import qrcode
@@ -20,18 +18,24 @@ class Example(QWidget):
         super().__init__()
         self.initUI()
 
+    #def extract_to_pdf(self):
+     #   pass
+
     def showQRCode(self):
         img = qrcode.make(self.priv)
         img2 = qrcode.make(self.address)
-        img.save("1.png")
-        img2.save("2.png")
-        pixmap = QPixmap("1.png")
-        pixmap2 = QPixmap("2.png")
-        self.graph1.setPixmap(pixmap)
-        self.graph2.setPixmap(pixmap2)
-        self.graph1.show(self)
-        self.graph2.show(self)
-        self.show(self)
+        img.save("Priv.png")
+        img2.save("Addr.png")
+        pixmap = QPixmap("Priv.png")
+        pixmap2 = QPixmap("Addr.png")
+        scpixmap = pixmap.scaled(self.graph1.size(), QtCore.Qt.KeepAspectRatio)
+        scpixmap2 = pixmap2.scaled(self.graph2.size(), QtCore.Qt.KeepAspectRatio)
+        self.graph1.setPixmap(scpixmap)
+        self.graph2.setPixmap(scpixmap2)
+        self.graph1.show()
+        self.graph2.show()
+        self.show()
+        #QPrintDialog.open(slot)
 
     def getbtc(self):
         self.priv = random_key()
@@ -40,7 +44,7 @@ class Example(QWidget):
         return self.priv, self.address
 
     def geteth(self):
-        keccak = sha3.keccak_256()
+        keccak = sha3.sha3_256()
         self.priv = SigningKey.generate(curve=SECP256k1)
         pub = self.priv.get_verifying_key().to_string()
         keccak.update(pub)
@@ -55,7 +59,7 @@ class Example(QWidget):
         if self.comboBox1.currentText() == "Ethash":
             self.geteth()
             self.textEdit1.setText(self.priv.to_string().hex())
-            self.textEdit2.setText(str(self.address))
+            self.textEdit2.setText('0x'+str(self.address.decode('UTF-8')))
         self.showQRCode()
 
     def changeC(self):
@@ -75,7 +79,7 @@ class Example(QWidget):
         self.setToolTip('This is a <b>QWidget</b> widget')
 
         label1 = QLabel('Algorithm',self)
-        label1.setGeometry(90, 10,68,17)
+        label1.setGeometry(90, 5,80,20)
 
         self.comboBox1 = QComboBox(self)
         self.comboBox1.setGeometry(30,30,200, 27)
@@ -99,31 +103,37 @@ class Example(QWidget):
         btn = QPushButton('Generate', self)
         btn.setToolTip('This is a <b>QPushButton</b> widget')
         btn.resize(btn.sizeHint())
-        btn.move(80, 130)
+        btn.setGeometry(250, 80, 120, 40)
         btn.clicked.connect(self.click_generate)
 
         label3 = QLabel('Private key', self)
-        label3.setGeometry(380, 180, 100, 17)
+        label3.setGeometry(270, 130, 100, 17)
 
         self.textEdit1 = QTextEdit("",self);
-        self.textEdit1.setGeometry(30,200,800,31)
+        self.textEdit1.setGeometry(10,150,620,50)
 
         label4 = QLabel('Address', self)
-        label4.setGeometry(390, 230, 68, 17)
+        label4.setGeometry(280, 210, 68, 17)
 
         self.textEdit2 = QTextEdit("", self);
-        self.textEdit2.setGeometry(30, 250, 800, 31)
+        self.textEdit2.setGeometry(10, 230, 620, 50)
+
+        label5 = QLabel('Private key', self)
+        label5.setGeometry(110, 285, 100, 17)
+
+        label6 = QLabel('Address', self)
+        label6.setGeometry(440, 285, 100, 17)
 
         self.graph1 = QLabel(self)
-        self.graph1.setGeometry(10,300,410,410)
+        self.graph1.setGeometry(10, 310, 300, 300)
 
         self.graph2 = QLabel(self)
-        self.graph2.setGeometry(430, 300, 410, 410)
+        self.graph2.setGeometry(330, 310, 300, 300)
 
         btn2 = QPushButton('Print It', self)
         btn2.setToolTip('This is a <b>QPushButton</b> widget')
         btn2.resize(btn2.sizeHint())
-        btn2.move(400, 710)
+        btn2.move(270, 620)
 
         #self.btnclick(self)
 
@@ -135,7 +145,7 @@ class Example(QWidget):
         font = QtGui.QFont()
         font.setPointSize(13)
         self.setFont(font)
-        self.setGeometry(100, 100, 850, 750)
+        self.setGeometry(100, 100, 650, 650)
         self.setWindowTitle('Tooltips')
         self.show()
 
