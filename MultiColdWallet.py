@@ -1,5 +1,3 @@
-
-
 import sys
 from PyQt5.QtWidgets import (QWidget, QToolTip,
     QPushButton, QComboBox, QLabel, QTextEdit, QGraphicsView, QGraphicsScene, QApplication)
@@ -56,7 +54,7 @@ class Example(QWidget):
         return self.priv, self.address
 
     def geteth(self):
-        keccak = sha3.sha3_256()
+        keccak = sha3.keccak_256()
         self.priv = SigningKey.generate(curve=SECP256k1)
         pub = self.priv.get_verifying_key().to_string()
         keccak.update(pub)
