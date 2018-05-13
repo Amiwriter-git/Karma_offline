@@ -5,6 +5,9 @@ from PyQt5.QtWidgets import (QWidget, QToolTip,
     QPushButton, QComboBox, QLabel, QTextEdit, QGraphicsView, QGraphicsScene, QApplication)
 from PyQt5.QtGui import (QFont,QImage, QPixmap)
 from PyQt5 import (QtGui, QtCore)
+from PyQt5.QtCore import QFile
+from PyQt5 import QtPrintSupport
+from PyQt5.Qt import QTextStream
 from bitcoin import *
 from PyQt5.Qt import (QPrinter, QPrintDialog)
 from ecdsa import SigningKey, SECP256k1
@@ -21,6 +24,16 @@ class Example(QWidget):
     #def extract_to_pdf(self):
      #   pass
 
+    def handlePreview(self):
+        f = QFile("Qrcodes.html")
+        f.open(QFile.ReadOnly | QFile.Text)
+        istream = QTextStream(f)
+        self.textfield.setHtml(istream.readAll())
+        f.close()
+        dialog = QtPrintSupport.QPrintPreviewDialog()
+        dialog.paintRequested.connect(self.textfield.print)#self.textEdit1.print)#editor.print_)
+        dialog.exec_()
+
     def showQRCode(self):
         img = qrcode.make(self.priv)
         img2 = qrcode.make(self.address)
@@ -35,7 +48,6 @@ class Example(QWidget):
         self.graph1.show()
         self.graph2.show()
         self.show()
-        #QPrintDialog.open(slot)
 
     def getbtc(self):
         self.priv = random_key()
@@ -56,10 +68,14 @@ class Example(QWidget):
             self.getbtc()
             self.textEdit1.setText(self.priv)
             self.textEdit2.setText(str(self.address))
+            #self.ipriv = self.priv
+            #self.iaddress = str(self.address)
         if self.comboBox1.currentText() == "Ethash":
             self.geteth()
             self.textEdit1.setText(self.priv.to_string().hex())
             self.textEdit2.setText('0x'+str(self.address.decode('UTF-8')))
+            #self.ipriv = self.priv.to_string().hex()
+            #self.iaddress = '0x'+str(self.address.decode('UTF-8'))
         self.showQRCode()
 
     def changeC(self):
@@ -115,6 +131,9 @@ class Example(QWidget):
         label4 = QLabel('Address', self)
         label4.setGeometry(280, 210, 68, 17)
 
+        self.textfield = QTextEdit("", self);
+        self.textfield.setGeometry(10, 230, 620, 50)
+
         self.textEdit2 = QTextEdit("", self);
         self.textEdit2.setGeometry(10, 230, 620, 50)
 
@@ -134,6 +153,7 @@ class Example(QWidget):
         btn2.setToolTip('This is a <b>QPushButton</b> widget')
         btn2.resize(btn2.sizeHint())
         btn2.move(270, 620)
+        btn2.clicked.connect(self.handlePreview)
 
         #self.btnclick(self)
 
@@ -141,6 +161,8 @@ class Example(QWidget):
 
         priv = ""
         address = ""
+        ipriv = ""
+        iaddress = ""
 
         font = QtGui.QFont()
         font.setPointSize(13)
